@@ -118,7 +118,7 @@ Initial map dimensions and resolution:
 
 
 
-#include "slam_gmapping.h"
+#include <gmapping/slam_gmapping.h>
 
 #include <iostream>
 

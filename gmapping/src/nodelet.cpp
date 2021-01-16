@@ -31,7 +31,7 @@
 #include <nodelet/nodelet.h>
 #include <pluginlib/class_list_macros.h>
 
-#include "slam_gmapping.h"
+#include <gmapping/slam_gmapping.h>
 
 class SlamGMappingNodelet : public nodelet::Nodelet
 {

@@ -104,6 +104,7 @@ class SlamGMapping
     std::string laser_frame_;
     std::string map_frame_;
     std::string odom_frame_;
+    std::string scan_topic;
 
     void updateMap(const sensor_msgs::LaserScan& scan);
     bool getOdomPose(GMapping::OrientedPoint& gmap_pose, const ros::Time& t);

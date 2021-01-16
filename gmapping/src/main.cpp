@@ -31,7 +31,7 @@
 
 #include <ros/ros.h>
 
-#include "slam_gmapping.h"
+#include <gmapping/slam_gmapping.h>
 
 int
 main(int argc, char** argv)
