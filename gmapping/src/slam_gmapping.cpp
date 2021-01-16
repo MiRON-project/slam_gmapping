@@ -71,6 +71,7 @@ Parameters used by our GMapping wrapper:
 - @b "~map_frame": @b [string] the tf frame_id where the robot pose on the map is published
 - @b "~odom_frame": @b [string] the tf frame_id from which odometry is read
 - @b "~map_update_interval": @b [double] time in seconds between two recalculations of the map
+- @b "~scan_frame": @b [string] the topic from which scans are read
 
 
 Parameters used by GMapping itself:
@@ -193,6 +194,9 @@ void SlamGMapping::init()
     map_frame_ = "map";
   if(!private_nh_.getParam("odom_frame", odom_frame_))
     odom_frame_ = "odom";
+  if(!private_nh_.getParam("scan_topic", scan_topic)) {
+    scan_topic = "scan";
+  }
 
   private_nh_.param("transform_publish_period", transform_publish_period_, 0.05);
 
@@ -272,7 +276,8 @@ void SlamGMapping::startLiveSlam()
   sst_ = node_.advertise<nav_msgs::OccupancyGrid>("map", 1, true);
   sstm_ = node_.advertise<nav_msgs::MapMetaData>("map_metadata", 1, true);
   ss_ = node_.advertiseService("dynamic_map", &SlamGMapping::mapCallback, this);
-  scan_filter_sub_ = new message_filters::Subscriber<sensor_msgs::LaserScan>(node_, "scan", 5);
+  ROS_INFO("%s",scan_topic.c_str());
+  scan_filter_sub_ = new message_filters::Subscriber<sensor_msgs::LaserScan>(node_, scan_topic, 5);
   scan_filter_ = new tf::MessageFilter<sensor_msgs::LaserScan>(*scan_filter_sub_, tf_, odom_frame_, 5);
   scan_filter_->registerCallback(boost::bind(&SlamGMapping::laserCallback, this, _1));
 
@@ -609,6 +614,7 @@ SlamGMapping::addScan(const sensor_msgs::LaserScan& scan, GMapping::OrientedPoin
 void
 SlamGMapping::laserCallback(const sensor_msgs::LaserScan::ConstPtr& scan)
 {
+  ROS_INFO("GOT SCAN");
   laser_count_++;
   if ((laser_count_ % throttle_scans_) != 0)
     return;
