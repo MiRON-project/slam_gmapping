@@ -31,6 +31,18 @@ catkin_package(
     rosbag_storage
 )
 
+#############
+##  Build  ##
+#############
+include_directories(
+  include
+  ${catkin_INCLUDE_DIRS}
+)
+
+add_library(${PROJECT_NAME} src/slam_gmapping.cpp)
+add_dependencies(${PROJECT_NAME} ${catkin_EXPORTED_TARGETS})
+target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES})
+
 add_executable(slam_gmapping src/slam_gmapping.cpp src/main.cpp)
 target_link_libraries(slam_gmapping ${Boost_LIBRARIES} ${catkin_LIBRARIES})
 if(catkin_EXPORTED_TARGETS)
@@ -43,10 +55,16 @@ target_link_libraries(slam_gmapping_nodelet ${catkin_LIBRARIES})
 add_executable(slam_gmapping_replay src/slam_gmapping.cpp src/replay.cpp)
 target_link_libraries(slam_gmapping_replay ${Boost_LIBRARIES} ${catkin_LIBRARIES})
 if(catkin_EXPORTED_TARGETS)
-add_dependencies(slam_gmapping_replay ${catkin_EXPORTED_TARGETS})
+  add_dependencies(slam_gmapping_replay ${catkin_EXPORTED_TARGETS})
 endif()
 
-install(TARGETS slam_gmapping slam_gmapping_nodelet slam_gmapping_replay
+
+#############
+## Install ##
+#############
+
+install(
+  TARGETS ${PROJECT_NAME} slam_gmapping_nodelet slam_gmapping_replay
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
@@ -55,6 +73,12 @@ install(TARGETS slam_gmapping slam_gmapping_nodelet slam_gmapping_replay
 install(FILES nodelet_plugins.xml
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 )
+
+install(
+  DIRECTORY include/${PROJECT_NAME}/
+  DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+)
+
 
 if(CATKIN_ENABLE_TESTING)
   find_package(rostest REQUIRED)
